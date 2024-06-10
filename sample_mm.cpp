@@ -15,6 +15,8 @@
 #include <stdio.h>
 #include "sample_mm.h"
 #include "iserver.h"
+#include "sql_mm/src/public/sql_mm.h"
+#include "sql_mm/src/public/sqlite_mm.h"
 
 SamplePlugin g_SamplePlugin;
 IServerGameDLL *server = NULL;
@@ -22,6 +24,8 @@ IServerGameClients *gameclients = NULL;
 IVEngineServer *engine = NULL;
 IGameEventManager2 *gameevents = NULL;
 ICvar *icvar = NULL;
+
+ISQLConnection *databaseConnection;
 
 // Should only be called within the active game loop (i e map should be loaded and active)
 // otherwise that'll be nullptr!
@@ -64,11 +68,44 @@ bool SamplePlugin::Unload(char *error, size_t maxlen)
 	return true;
 }
 
+void OnGenericTxnSuccess(std::vector<ISQLQuery *> queries)
+{
+	ConMsg("[KZDB] Transaction successful.\n");
+}
+
+void OnGenericTxnFailure(std::string error, int failIndex)
+{
+	ConMsg("[KZDB] Transaction failed at %i (%s).\n", failIndex, error.c_str());
+}
+
+void OnDatabaseConnected(bool connect)
+{
+	if (connect)
+	{
+		META_CONPRINT("DB connected.\n");
+		Transaction txn;
+		txn.queries.push_back("create table my_testies (id integer primary key autoincrement, name text);");
+		databaseConnection->ExecuteTransaction(txn, OnGenericTxnSuccess, OnGenericTxnFailure);
+	}
+	else
+	{
+		META_CONPRINT("Failed to connect\n");
+		databaseConnection->Destroy();
+		databaseConnection = nullptr;
+	}
+	return;
+}
+
 void SamplePlugin::AllPluginsLoaded()
 {
 	/* This is where we'd do stuff that relies on the mod or other plugins 
 	 * being initialized (for example, cvars added and events registered).
 	 */
+	ISQLInterface *sqlInterface = (ISQLInterface *)g_SMAPI->MetaFactory(SQLMM_INTERFACE, nullptr, nullptr);
+	SQLiteConnectionInfo info;
+	info.database = "addons/cs2kz/data/test.sqlite3";
+	databaseConnection = sqlInterface->GetSQLiteClient()->CreateSQLiteConnection(info);
+	databaseConnection->Connect(OnDatabaseConnected);
 }
 
 bool SamplePlugin::Pause(char *error, size_t maxlen)
