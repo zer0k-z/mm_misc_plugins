@@ -191,7 +191,7 @@ class MMSPluginConfig(object):
         cxx.cflags += ['/MTd']
         cxx.linkflags += ['/NODEFAULTLIB:libcmt']
       else:
-        cxx.cflags += ['/MT']
+        cxx.cflags += ['/MD']
       cxx.defines += [
         '_CRT_SECURE_NO_DEPRECATE',
         '_CRT_SECURE_NO_WARNINGS',
