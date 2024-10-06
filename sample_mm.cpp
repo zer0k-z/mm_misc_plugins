@@ -14,17 +14,23 @@
 
 #include <stdio.h>
 #include "sample_mm.h"
-
+#include "utlvector.h"
 SamplePlugin g_SamplePlugin;
 
 // Should only be called within the active game loop (i e map should be loaded and active)
 // otherwise that'll be nullptr!
 
 PLUGIN_EXPOSE(SamplePlugin, g_SamplePlugin);
+
+
 bool SamplePlugin::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, bool late)
 {
 	PLUGIN_SAVEVARS();
-
+	char text[64] {};
+	// This line will cause the crash.
+	snprintf(text, sizeof(text), "Test%i", 1);
+	
+	CSplitString str("text", ",");
 	return true;
 }
 
