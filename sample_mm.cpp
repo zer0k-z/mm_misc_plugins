@@ -28,7 +28,7 @@ bool SamplePlugin::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, 
 	PLUGIN_SAVEVARS();
 	char text[64] {};
 	// This line will cause the crash.
-	snprintf(text, sizeof(text), "Test%i", 1);
+	V_snprintf(text, sizeof(text), "Test%i", 1);
 	
 	CSplitString str("text", ",");
 	return true;
