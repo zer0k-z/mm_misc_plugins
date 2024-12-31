@@ -14,7 +14,7 @@
 
 #include <stdio.h>
 #include "sample_mm.h"
-
+#include "keyvalues3.h"
 SamplePlugin g_SamplePlugin;
 
 // Should only be called within the active game loop (i e map should be loaded and active)
@@ -23,6 +23,8 @@ SamplePlugin g_SamplePlugin;
 PLUGIN_EXPOSE(SamplePlugin, g_SamplePlugin);
 bool SamplePlugin::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, bool late)
 {
+	KeyValues3 kv(KV3_TYPEEX_TABLE, KV3_SUBTYPE_UNSPECIFIED);
+	
 	PLUGIN_SAVEVARS();
 
 	return true;

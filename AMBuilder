@@ -13,6 +13,7 @@ for sdk_target in MMSPlugin.sdk_targets:
   binary = MMSPlugin.HL2Library(builder, cxx, MMSPlugin.plugin_name, sdk)
 
   binary.sources += [
+    os.path.join(sdk['path'], 'tier1', 'keyvalues3.cpp'),
     'sample_mm.cpp',
   ]
 
